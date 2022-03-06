@@ -14,5 +14,9 @@ public:
 int main()
 {
     // Oversubscription
+    // More threads than CPU number 
+    // Content switching reduces the performance
+    int num = std::thread::hardware_concurrency(); // Indication of num_cores
+    cout << num << endl;
     return 0;
 }
