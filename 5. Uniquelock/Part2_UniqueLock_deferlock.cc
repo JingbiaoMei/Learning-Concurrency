@@ -4,8 +4,6 @@
 #include <fstream>
 using namespace std;
 
-
-
 class LogFile {
     std::mutex _mu;
     ofstream _f;
@@ -17,10 +15,23 @@ public:
         //std::lock_guard<mutex> locker(_mu, std::adopt_lock); 
         // Unique lock is similar to lock guard but more flexible 
         std::unique_lock<mutex> locker(_mu);
+        // do something else without locking the mutex
+
+
+
+        locker.lock();
         _f << "From" << id << ": " << value << endl;
         locker.unlock();
-        //... if other things to be done, but does not require mutex lock
-        // could call unlock, only the printing requires the lock 
+
+        //lock and unlock for more than one time
+
+        // could move a unique lock
+        // Transfer the ownership of the mutex from one unique lock to another
+
+        std::unique_lock<mutex> locker2 = std::move(locker);
+
+        // unique lock is more heavy weighted then the lock guard
+        // less performance from unique lock 
     }
 
 };
