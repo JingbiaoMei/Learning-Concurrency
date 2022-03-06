@@ -4,15 +4,6 @@
 #include <fstream>
 using namespace std;
 
-// With two mutex, the code will not be finished, it will stuck in the middle
-// A dead lock happens
-// T1 thread locks mutex mu
-// Before T1 go ahead and lock mu2, main thread locks mu2
-// The T1 is waiting for main thread to release mu2
-// The main thread is waiting for T1 to release mu
-
-//Solution, make sure each thread has the same order for locking mutex
-
 class LogFile {
     std::mutex _mu;
     ofstream _f;
@@ -24,7 +15,23 @@ public:
         //std::lock_guard<mutex> locker(_mu, std::adopt_lock); 
         // Unique lock is similar to lock guard but more flexible 
         std::unique_lock<mutex> locker(_mu);
-        cout << "From" << id << ": " << value << endl;
+        // do something else without locking the mutex
+
+
+
+        locker.lock();
+        _f << "From" << id << ": " << value << endl;
+        locker.unlock();
+
+        //lock and unlock for more than one time
+
+        // could move a unique lock
+        // Transfer the ownership of the mutex from one unique lock to another
+
+        std::unique_lock<mutex> locker2 = std::move(locker);
+
+        // unique lock is more heavy weighted then the lock guard
+        // less performance from unique lock 
     }
 
 };
